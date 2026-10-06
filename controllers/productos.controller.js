@@ -1,6 +1,6 @@
 const conexion = require("../db");
 const path = require("path");
-
+const { avisar } = require("../events");
 //GET productos
 const getProductos = (req, res) => {
   const sql = "SELECT * FROM producto";

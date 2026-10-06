@@ -10,7 +10,7 @@ const compraRoutes = require("./routes/compra");
 const authRoutes = require("./routes/auth");
 const misCompras = require("./routes/misCompras");
 const contactoRoutes = require("./routes/contacto");
-
+const { suscribir } = require("./events");
 const app = express();
 
 app.use(cors({
@@ -21,6 +21,8 @@ app.use(cors({
     credentials: true
 }));
 
+
+app.get("/api/eventos", suscribir);
 app.use(express.json());
 app.use((req,res,next)=>{
     console.log("PETICION:", req.method, req.url);
