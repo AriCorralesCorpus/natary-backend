@@ -64,7 +64,7 @@ const token = jwt.sign(
         tipo: user.tipo_usu,
         permisos: listaPermisos
     },
-    "CLAVE_SECRETA",
+    process.env.JWT_SECRET,
     {
         expiresIn: "2h"
     }
