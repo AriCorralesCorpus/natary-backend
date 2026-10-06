@@ -11,7 +11,6 @@ const getProductos = (req, res) => {
   });
 };
 
-//AGREGAR PRODUCTO
 const agregarProducto = (req, res) => {
   const { nombre, descripcion, precio, stock } = req.body;
 
@@ -21,27 +20,45 @@ const agregarProducto = (req, res) => {
 
   const imagen = req.files.imagen;
   const nombreImagen = Date.now() + "_" + imagen.name;
-
   const uploadPath = path.join(__dirname, "../uploads/", nombreImagen);
 
   imagen.mv(uploadPath, (err) => {
-    if (err) return res.status(500).json(err);
+    if (err) {
+      console.error("ERROR AL GUARDAR IMAGEN:", err);
+      return res.status(500).json({ message: err.message });
+    }
 
-    const sql = `
-      INSERT INTO producto 
-      (nombre_pro, des_pro, precio_pro, stock_pro, img_pro)
-      VALUES (?, ?, ?, ?, ?)
+    const sqlClave = `
+      SELECT IFNULL(MAX(CAST(SUBSTRING(cve_pro, 5) AS UNSIGNED)), 0) + 1 AS siguiente
+      FROM producto
     `;
 
-    conexion.query(
-      sql,
-      [nombre, descripcion, precio, stock, nombreImagen],
-      (err) => {
-        if (err) return res.status(500).json(err);
-
-        res.json({ success: true });
+    conexion.query(sqlClave, (err, filas) => {
+      if (err) {
+        console.error("ERROR AL GENERAR CLAVE:", err);
+        return res.status(500).json({ message: err.message });
       }
-    );
+
+      const cve_pro = "PROD" + String(filas[0].siguiente).padStart(3, "0");
+
+      const sql = `
+        INSERT INTO producto
+        (cve_pro, nombre_pro, des_pro, precio_pro, stock_pro, img_pro)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
+
+      conexion.query(
+        sql,
+        [cve_pro, nombre, descripcion, precio, stock, nombreImagen],
+        (err) => {
+          if (err) {
+            console.error("ERROR POST PRODUCTO:", err);
+            return res.status(500).json({ message: err.message });
+          }
+          res.json({ success: true, cve_pro });
+        }
+      );
+    });
   });
 };
 
