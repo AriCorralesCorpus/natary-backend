@@ -1,6 +1,9 @@
 const conexion = require("../db");
 const path = require("path");
 const { avisar } = require("../events");
+
+   const { validarProducto, validarStock } = require("../validators/producto");
+
 //GET productos
 const getProductos = (req, res) => {
   const sql = "SELECT * FROM producto";
@@ -13,6 +16,9 @@ const getProductos = (req, res) => {
 
 const agregarProducto = (req, res) => {
   const { nombre, descripcion, precio, stock } = req.body;
+
+     const { valido, errores } = validarProducto({ nombre, descripcion, precio, stock });
+   if (!valido) return res.status(400).json({ message: errores.join(", "), errores });
 
   if (!req.files || !req.files.imagen) {
     return res.status(400).json({ message: "Imagen requerida" });
@@ -67,6 +73,9 @@ const actualizarStock = (req, res) => {
   const { id } = req.params;
   const { stock } = req.body;
 
+const { valido, errores } = validarStock(stock);
+if (!valido) return res.status(400).json({ message: errores.join(", "), errores });
+
   const sql = `
     UPDATE producto 
     SET stock_pro = ?
@@ -104,6 +113,9 @@ const editarProducto = (req,res)=>{
     precio,
     stock
   } = req.body;
+
+  const { valido, errores } = validarProducto({ nombre, descripcion, precio, stock });
+if (!valido) return res.status(400).json({ message: errores.join(", "), errores });
 
 
   const sql = `
