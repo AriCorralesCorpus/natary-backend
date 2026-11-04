@@ -1,4 +1,9 @@
 require("dotenv").config();
+
+if (!process.env.JWT_SECRET) {
+  throw new Error("Falta la variable de entorno JWT_SECRET");
+}
+
 const express = require("express");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");

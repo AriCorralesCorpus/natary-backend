@@ -2,7 +2,7 @@ function verificarPermiso(...permisosPermitidos) {
 
     return (req, res, next) => {
 
-        const permisosUsuario = req.user.permisos || [];
+        const permisosUsuario = req.user?.permisos || [];
 
         const autorizado = permisosPermitidos.some(p =>
             permisosUsuario.includes(p)

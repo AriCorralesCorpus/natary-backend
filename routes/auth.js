@@ -101,9 +101,21 @@ router.post("/registro", async (req, res) => {
     correo
 } = req.body;
 
-    if (!usuario || !password) {
+       if (!usuario || !password || !nombre || !apellidoP || !telefono || !correo) {
         return res.status(400).json({
             message: "Todos los campos son obligatorios"
+        });
+    }
+
+    if (!/^\d{10}$/.test(String(telefono))) {
+        return res.status(400).json({
+            message: "El teléfono debe tener 10 dígitos"
+        });
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(correo))) {
+        return res.status(400).json({
+            message: "El correo no tiene un formato válido"
         });
     }
 
